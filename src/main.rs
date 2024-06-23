@@ -26,8 +26,7 @@ fn handle_connection(mut stream: TcpStream) {
     let response = b"HTTP/1.1 200 OK\r\n\
     Content-type: text/plain; charset=utf-8\r\n\
     Connection: close\r\n\r\n\
-    This is a snippet of a plain text file.\
-    ";
+    This is a snippet of a plain text file.";
     stream.write(response).unwrap();
     stream.flush().unwrap();
 }
