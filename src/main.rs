@@ -104,31 +104,43 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
     let parse_req = parse_http_request(string_req).unwrap();
 
     let req_path = parse_req.path.clone();
-    let mut path = root_folder.clone();
-    path.push_str(req_path.as_str());
 
-    let content_type = get_content_type(&req_path);
+    if req_path.starts_with("/..") || req_path.starts_with("/forbidden") {
+        let response = b"HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n<html>403 Forbidden</html>";
+        println!("GET 127.0.0.1 {} -> 403 (Forbidden)", req_path);
+        stream.write(response).unwrap();
+        stream.flush().unwrap();
+    } else {
 
-    let contents = fs::read(path.clone()).unwrap();
-
-    println!("GET 127.0.0.1 {} -> 200 (OK)", req_path.clone());
-
-    let string_response = format!(
-        "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nConnection: close\r\n\r\n",
-        content_type
-    );
-
-    let response = string_response.as_bytes();
-
-    // let response = b"HTTP/1.1 200 OK\r\n\
-    // Content-type: text/plain; charset=utf-8\r\n\
-    // Connection: close\r\n\r\n";
+   
 
 
+        let mut path = root_folder.clone();
+        path.push_str(req_path.as_str());
 
-    stream.write(response).unwrap();
-    stream.write(&contents).unwrap();
-    
-    stream.flush().unwrap();
+        let content_type = get_content_type(&req_path);
+
+        let contents = fs::read(path.clone()).unwrap();
+
+        println!("GET 127.0.0.1 {} -> 200 (OK)", req_path.clone());
+
+        let string_response = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nConnection: close\r\n\r\n",
+            content_type
+        );
+
+        let response = string_response.as_bytes();
+
+        // let response = b"HTTP/1.1 200 OK\r\n\
+        // Content-type: text/plain; charset=utf-8\r\n\
+        // Connection: close\r\n\r\n";
+
+
+
+        stream.write(response).unwrap();
+        stream.write(&contents).unwrap();
+        
+        stream.flush().unwrap();
+}
 }
 
