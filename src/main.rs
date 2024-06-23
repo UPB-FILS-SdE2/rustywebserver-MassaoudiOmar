@@ -141,7 +141,7 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
                 stream.flush().unwrap();
             },
             Err(_) => {
-                println!("GET 127.0.0.1 {} -> 404 (Not Found)", path);
+                println!("GET 127.0.0.1 {} -> 404 (Not Found)", req_path);
                 let response = b"HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\n<html>404 Not Found</html>";
                 stream.write(response).unwrap();
                 stream.flush().unwrap();
