@@ -59,8 +59,8 @@ fn main() {
   
     
     let listener = TcpListener::bind("0.0.0.0:8000").unwrap();
-    println!("Server listening on 0.0.0.0:8000");
     println!("Root folder: {}" , arg_root);
+    println!("Server listening on 0.0.0.0:8000");
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
