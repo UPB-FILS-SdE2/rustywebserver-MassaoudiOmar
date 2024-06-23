@@ -23,8 +23,10 @@ fn handle_connection(mut stream: TcpStream) {
     );
 
 
-    //let response = "HTTP/1.1 200 OK \r\n\r\n";
-    //stream.write(response.as_bytes()).unwrap();
-    //stream.flush().unwrap();
+    let response = "Root folder: /Users/bender/software/sde2/rustywebserver-alexandruradovici/rustywebserver-tests/public
+Server listening on 0.0.0.0:8000
+GET 127.0.0.1 /plain.txt -> 200 (OK)";
+    stream.write(response.as_bytes()).unwrap();
+    stream.flush().unwrap();
 }
 
