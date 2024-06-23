@@ -56,9 +56,11 @@ fn main() {
 
     let arg_root = args[2].clone();
 
-    println!("{:?}" , arg_root);
+  
     
     let listener = TcpListener::bind("0.0.0.0:8000").unwrap();
+    println!("Server listening on 0.0.0.0:8000");
+    println!("Root folder: {}" , arg_root);
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
@@ -80,7 +82,7 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
     let mut path = root_folder.clone();
     path.push_str(req_path.as_str());
 
-    println!("{:?}", path);
+    
 
     let contents = fs::read(path.clone()).unwrap();
 
