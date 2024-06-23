@@ -14,13 +14,17 @@ fn main() {
 
 
 fn handle_connection(mut stream: TcpStream) {
-    let buf_reader = BufReader::new(&mut stream);
-    let http_request: Vec<_> = buf_reader
-        .lines()
-        .map(|result| result.unwrap())
-        .take_while(|line| !line.is_empty())
-        .collect();
+    let mut buffer = [0; 1024];
 
-    println!("Request: {http_request:#?}");
+    stream.read(&mut buffer).unwrap();
+    println!(
+        "request: {}",
+        String::from_utf8_lossy(&buffer[..])
+    );
+
+
+    let response = "HTTP/1.1 200 OK \r\n\r\n";
+    stream.write(response.as_bytes()).unwrap();
+    stream.flush().unwrap();
 }
 
