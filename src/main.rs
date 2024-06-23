@@ -120,27 +120,35 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
 
         let content_type = get_content_type(&req_path);
 
-        let contents = fs::read(path.clone()).unwrap();
+        let contents = fs::read(path.clone());
 
-        println!("GET 127.0.0.1 {} -> 200 (OK)", req_path.clone());
+        match contents {
+            Ok(contents) => {
+                println!("GET 127.0.0.1 {} -> 200 (OK)", req_path.clone());
 
-        let string_response = format!(
-            "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nConnection: close\r\n\r\n",
-            content_type
-        );
+                let string_response = format!(
+                    "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nConnection: close\r\n\r\n",
+                    content_type
+                );
+                let response = string_response.as_bytes();
 
-        let response = string_response.as_bytes();
+                // let response = b"HTTP/1.1 200 OK\r\n\
+                // Content-type: text/plain; charset=utf-8\r\n\
+                // Connection: close\r\n\r\n";
+                stream.write(response).unwrap();
+                stream.write(&contents).unwrap();
+                
+                stream.flush().unwrap();
+            },
+            Err(_) => {
+                println!("GET 127.0.0.1 {} -> 404 (Not Found)", path);
+                let response = b"HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\n<html>404 Not Found</html>";
+                stream.write(response).unwrap();
+                stream.flush().unwrap();
+            }
+        }
 
-        // let response = b"HTTP/1.1 200 OK\r\n\
-        // Content-type: text/plain; charset=utf-8\r\n\
-        // Connection: close\r\n\r\n";
-
-
-
-        stream.write(response).unwrap();
-        stream.write(&contents).unwrap();
         
-        stream.flush().unwrap();
 }
 }
 
