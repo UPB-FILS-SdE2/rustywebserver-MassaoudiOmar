@@ -23,11 +23,11 @@ fn handle_connection(mut stream: TcpStream) {
     );
 
 
-    let response = "HTTP/1.1 200 OK\r\n
-    text / plain; charset = utf-8\r\n
+    let response = b"HTTP/1.1 200 OK\r\n
+    text/plain; charset=utf-8\r\n
     Connection: close
     ";
-    stream.write(response.as_bytes()).unwrap();
+    stream.write(response).unwrap();
     stream.flush().unwrap();
 }
 
