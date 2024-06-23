@@ -50,6 +50,31 @@ fn parse_http_request(req: String) -> Result<HttpRequest, String> {
         body,
     })
 }
+
+fn get_content_type(filename: &str) -> &str {
+    let extension = filename.rsplit('.').next().and_then(|ext| {
+        if ext != filename {
+            Some(ext)
+        } else {
+            None
+        }
+    });
+
+    match extension {
+        Some("txt") => "text/plain; charset=utf-8",
+        Some("html") => "text/html; charset=utf-8",
+        Some("css") => "text/css; charset=utf-8",
+        Some("js") => "text/javascript; charset=utf-8",
+        Some("jpeg") | Some("jpg") => "image/jpeg",
+        Some("png") => "image/png",
+        Some("zip") => "application/zip",
+        Some(_) => "application/octet-stream",
+        None => "application/octet-stream",
+    }
+}
+
+
+
 fn main() {
     
     let args: Vec<String> = env::args().collect();
@@ -82,16 +107,22 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
     let mut path = root_folder.clone();
     path.push_str(req_path.as_str());
 
-    
+    let content_type = get_content_type(&req_path);
 
     let contents = fs::read(path.clone()).unwrap();
 
     println!("GET 127.0.0.1 {} -> 200 (OK)", req_path.clone());
 
+    let string_response = format!(
+        "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nConnection: close\r\n\r\n",
+        content_type
+    );
 
-    let response = b"HTTP/1.1 200 OK\r\n\
-    Content-type: text/plain; charset=utf-8\r\n\
-    Connection: close\r\n\r\n";
+    let response = string_response.as_bytes();
+
+    // let response = b"HTTP/1.1 200 OK\r\n\
+    // Content-type: text/plain; charset=utf-8\r\n\
+    // Connection: close\r\n\r\n";
 
 
 
