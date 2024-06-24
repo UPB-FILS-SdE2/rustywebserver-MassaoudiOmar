@@ -139,6 +139,7 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
 
         
         stream.write("HTTP/1.1 200 OK\r\n".as_bytes()).unwrap();
+        println!("{}",response_str);
         stream.write(response_str.as_bytes()).unwrap();
         stream.flush().unwrap();
 
