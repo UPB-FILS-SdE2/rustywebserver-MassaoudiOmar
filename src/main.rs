@@ -132,23 +132,31 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
                 .stderr(Stdio::piped())
                 .output().unwrap();
 
-        println!("{} 127.0.0.1 {} -> 200 (OK)", parse_req.reqtype.clone(), req_path.clone());
+        if output.status.success() {
 
-        let response_str = String::from_utf8_lossy(&output.stdout);
-
-        let parts: Vec<&str> = response_str.splitn(2, "\n\n").collect();
-        
+            println!("{} 127.0.0.1 {} -> 200 (OK)", parse_req.reqtype.clone(), req_path.clone());
+            
+            let response_str = String::from_utf8_lossy(&output.stdout);
+            
+            let parts: Vec<&str> = response_str.splitn(2, "\n\n").collect();
+            
             let headers = parts[0].replace("\n", "\r\n");
             let body = parts[1];
             let corrected_response = format!("{}\r\n\r\n{}", headers, body);
-        
+            
+            
+            
+            stream.write("HTTP/1.1 200 OK\r\n".as_bytes()).unwrap();
+            
+            stream.write(corrected_response.as_bytes()).unwrap();
+            stream.flush().unwrap();
+        } else {
+            println!("{} 127.0.0.1 {} -> 500 (Internal Server Error)",  parse_req.reqtype.clone(), req_path.clone());
+            stream.write(b"HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\n\r\n<html>500 Internal Server Error</html>").unwrap();
+            stream.flush().unwrap();
 
-        
-        stream.write("HTTP/1.1 200 OK\r\n".as_bytes()).unwrap();
-        
-        stream.write(corrected_response.as_bytes()).unwrap();
-        stream.flush().unwrap();
-
+        }
+            
     } 
     
     
