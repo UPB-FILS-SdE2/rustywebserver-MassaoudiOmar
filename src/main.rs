@@ -117,8 +117,7 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
         
 
         let mut path = root_folder.clone();
-        path.push_str(req_path.as_str());
-
+        
         let mut query_map = HashMap::new();
         if let Some(pos) = req_path.find('?') {
             let aux_path = req_path[..pos].to_string();
@@ -132,6 +131,7 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
             }
             req_path = aux_path;
         }
+        path.push_str(req_path.as_str());
 
        
         let mut cmd = Command::new(&path);
