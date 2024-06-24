@@ -132,7 +132,7 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
             }
             
         }
-        println!("{}", path)
+        println!("{}", path);
        
         let mut cmd = Command::new(&path);
         
