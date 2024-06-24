@@ -136,11 +136,17 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
 
         let response_str = String::from_utf8_lossy(&output.stdout);
 
+        let parts: Vec<&str> = response_str.splitn(2, "\n\n").collect();
+        
+            let headers = parts[0].replace("\n", "\r\n");
+            let body = parts[1];
+            let corrected_response = format!("{}\r\n\r\n{}", headers, body);
+        
 
         
         stream.write("HTTP/1.1 200 OK\r\n".as_bytes()).unwrap();
-        println!("{}",response_str);
-        stream.write(response_str.as_bytes()).unwrap();
+        
+        stream.write(corrected_response.as_bytes()).unwrap();
         stream.flush().unwrap();
 
     } 
