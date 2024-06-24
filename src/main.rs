@@ -110,6 +110,8 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
         println!("GET 127.0.0.1 {} -> 403 (Forbidden)", req_path);
         stream.write(response).unwrap();
         stream.flush().unwrap();
+
+
     } else if req_path.starts_with("/scripts") {
 
         let mut path = root_folder.clone();
@@ -124,13 +126,13 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
         }
 
         cmd.env("Method", parse_req.reqtype.clone());
-        cmd.env("Path", path.clone());
+        cmd.env("Path", req_path.clone());
 
         let output = cmd.stdout(Stdio::piped())
                 .stderr(Stdio::piped())
                 .output().unwrap();
 
-        println!("{} 127.0.0.1 {} -> 200 (OK)", parse_req.reqtype.clone(), path.clone());
+        println!("{} 127.0.0.1 {} -> 200 (OK)", parse_req.reqtype.clone(), req_path.clone());
 
         let response_str = String::from_utf8_lossy(&output.stdout);
 
