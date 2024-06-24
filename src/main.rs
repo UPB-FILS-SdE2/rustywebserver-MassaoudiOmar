@@ -121,7 +121,7 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
 
         let mut query_map = HashMap::new();
         if let Some(pos) = req_path.find('?') {
-            req_path = req_path[..pos].to_string();
+            let aux_path = req_path[..pos].to_string();
             let query_str = &req_path[pos + 1..];
             
             for param in query_str.split('&') {
@@ -130,7 +130,7 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
                     query_map.insert(key.to_string(), value.to_string());
                 }
             }
-            
+            req_path = aux_path;
         }
 
        
