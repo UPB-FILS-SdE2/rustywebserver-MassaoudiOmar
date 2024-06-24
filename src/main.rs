@@ -135,7 +135,8 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
         let response_str = String::from_utf8_lossy(&output.stdout);
 
 
-
+        
+        stream.write("HTTP/1.1 200 OK\r\n".as_bytes()).unwrap();
         stream.write(response_str.as_bytes()).unwrap();
         stream.flush().unwrap();
 
