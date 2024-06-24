@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap, env, fs, io::prelude::*, net::{TcpListener, TcpStream}
+    collections::HashMap, env, fs, io::prelude::*, net::{TcpListener, TcpStream}, process::{Command, Stdio}
 };
 
 #[derive(Debug)]
@@ -110,9 +110,41 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
         println!("GET 127.0.0.1 {} -> 403 (Forbidden)", req_path);
         stream.write(response).unwrap();
         stream.flush().unwrap();
-    } else {
+    } else if req_path.starts_with("/scripts") {
 
-   
+        let mut path = root_folder.clone();
+
+        path.push_str(req_path.as_str());
+
+        let mut cmd = Command::new(&path);
+        
+        let headers = parse_req.headers.clone();
+        for (key, value) in headers {
+            cmd.env(key, value);
+        }
+
+        cmd.env("Method", parse_req.reqtype.clone());
+        cmd.env("Path", path.clone());
+
+        let output = cmd.stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .output().unwrap();
+
+        println!("{} 127.0.0.1 {} -> 200 (OK)", parse_req.reqtype.clone(), path.clone());
+
+        let response_str = String::from_utf8_lossy(&output.stdout);
+
+
+
+        stream.write(response_str.as_bytes()).unwrap();
+        stream.flush().unwrap();
+
+    } 
+    
+    
+    else {
+
+        
 
 
         let mut path = root_folder.clone();
