@@ -118,11 +118,24 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
 
         path.push_str(req_path.as_str());
 
+       
         let mut cmd = Command::new(&path);
         
         let headers = parse_req.headers.clone();
         for (key, value) in headers {
             cmd.env(key, value);
+        }
+        
+        if let Some(pos) = req_path.find('?') {
+            path = req_path[..pos].to_string();
+            let query_str = &req_path[pos + 1..];
+            
+            for param in query_str.split('&') {
+                let mut key_value = param.splitn(2, '=');
+                if let (Some(key), Some(value)) = (key_value.next(), key_value.next()) {
+                    cmd.env(key.to_string(), value.to_string());
+                }
+            }
         }
 
         cmd.env("Method", parse_req.reqtype.clone());
