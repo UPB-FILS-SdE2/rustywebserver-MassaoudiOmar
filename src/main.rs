@@ -130,6 +130,7 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
                     query_map.insert(key.to_string(), value.to_string());
                 }
             }
+            println!("{}", path)
         }
 
        
