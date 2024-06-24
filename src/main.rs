@@ -103,7 +103,7 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
 
     let parse_req = parse_http_request(string_req).unwrap();
 
-    let req_path = parse_req.path.clone();
+    let mut req_path = parse_req.path.clone();
 
     if req_path.starts_with("/..") || req_path.starts_with("/forbidden") {
         let response = b"HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n<html>403 Forbidden</html>";
@@ -121,7 +121,7 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
 
         let mut query_map = HashMap::new();
         if let Some(pos) = req_path.find('?') {
-            path = req_path[..pos].to_string();
+            req_path = req_path[..pos].to_string();
             let query_str = &req_path[pos + 1..];
             
             for param in query_str.split('&') {
@@ -132,7 +132,7 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
             }
             
         }
-        println!("{}", path);
+
        
         let mut cmd = Command::new(&path);
         
