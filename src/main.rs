@@ -140,7 +140,9 @@ fn handle_connection(mut stream: TcpStream, root_folder: String) {
             cmd.env(key, value);
         }
 
-        
+        for (key, value) in query_map {
+            cmd.env(key, value);
+        }
 
         cmd.env("Method", parse_req.reqtype.clone());
         cmd.env("Path", req_path.clone());
